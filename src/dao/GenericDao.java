@@ -1,13 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
+import java.util.List;
+import java.util.Optional;
+import java.sql.Connection;
 
-/**
- *
- * @author 
- */
-public class GenericDao {
+public interface GenericDao<T> {
     
+    public boolean crear(T entidad, Connection conn) throws Exception;
+    
+    public Optional<T> leer(long id, Connection conn) throws Exception;
+    
+    public List<T> leerTodos(Connection conn) throws Exception;
+    
+    public boolean actualizar(T entidad, Connection conn) throws Exception;
+    
+    public boolean eliminar(long id, Connection conn) throws Exception;
 }
