@@ -8,6 +8,8 @@ import entities.Pedido;
 import java.util.List;
 import java.util.Optional;
 import java.sql.SQLException;
+import java.sql.Date;
+import entities.Envio;
 // Importamos solo lo necesario para la lógica SQL, NO DatabaseConnection
 
 // La clase PedidoDAO asume que se le pasa la conexión desde el exterior.
@@ -19,13 +21,13 @@ public class PedidoDao implements GenericDao<Pedido>{
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setLong(1, entidad.getId());
-            stmt.setInt(2, entidad.getEliminado());
+            stmt.setBoolean(2, entidad.getEliminado());
             stmt.setString(3, entidad.getNumero());
-            stmt.setString(4, entidad.getFecha());
+            stmt.setDate(4, entidad.getFecha() != null ? Date.valueOf(entidad.getFecha()) : null);
             stmt.setString(5, entidad.getClienteNombre());
             stmt.setDouble(6, entidad.getTotal());
-            stmt.setString(7, entidad.getEstado());
-            stmt.setLong(8, entidad.getEnvio());
+            stmt.setString(7, entidad.getEstado().name());
+            stmt.setObject(8, entidad.getEnvio() != null ? entidad.getEnvio().getId() : null);
 
             int filasAfectadas = stmt.executeUpdate();
 
@@ -67,7 +69,29 @@ public class PedidoDao implements GenericDao<Pedido>{
             if(rs.next()){
                 rs.getInt("id");
                 
-                pedido = new Pedido(rs.getLong("id"),rs.getInt("eliminado"),rs.getString("numero"),rs.getString("fecha"),rs.getString("clienteNombre"), rs.getDouble("total"), rs.getString("estado"), rs.getLong("envio"));
+                pedido = new Pedido();
+                pedido.setId(rs.getLong("id"));
+                pedido.setEliminado(rs.getBoolean("eliminado"));
+                pedido.setNumero(rs.getString("numero"));
+                pedido.setFecha(rs.getDate("fecha").toLocalDate());
+                pedido.setClienteNombre(rs.getString("clienteNombre"));
+                pedido.setTotal(rs.getDouble("total"));
+                pedido.setEstado(Pedido.EstadoPedido.valueOf(rs.getString("estado")));
+                
+                Long envioId = rs.getLong("envio");
+                if(envioId != null){
+                    Envio envio = new Envio();
+                    envio.setId(envioId);
+                    envio.setEliminado(rs.getBoolean("eliminado"));
+                    envio.setTracking(rs.getString("tracking"));
+                    envio.setEmpresa(Envio.EmpresaEnvio.valueOf(rs.getString("empresa")));
+                    envio.setTipo(Envio.TipoEnvio.valueOf(rs.getString("tipo")));
+                    envio.setCosto(rs.getDouble("costo"));
+                    envio.setFechaDespacho(rs.getDate("fechaDespacho").toLocalDate());
+                    envio.setFechaEstimada(rs.getDate("fechaEstimada").toLocalDate());
+                    envio.setEstado(Envio.EstadoEnvio.valueOf(rs.getString("estado")));
+                    pedido.setEnvio(envio);
+                }
                 
             }
             else{
@@ -92,11 +116,11 @@ public class PedidoDao implements GenericDao<Pedido>{
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, entidad.getNumero());
-            stmt.setString(2, entidad.getFecha());
+            stmt.setDate(2, entidad.getFecha() != null ? Date.valueOf(entidad.getFecha()) : null);
             stmt.setString(3, entidad.getClienteNombre());
             stmt.setDouble(4, entidad.getTotal());
-            stmt.setString(5, entidad.getEstado());
-            stmt.setLong(6, entidad.getEnvio());
+            stmt.setString(5, entidad.getEstado().name());
+            stmt.setObject(6, entidad.getEnvio() != null ? entidad.getEnvio().getId() : null);
 
             // Cláusula WHERE
             stmt.setLong(7, entidad.getId()); 
