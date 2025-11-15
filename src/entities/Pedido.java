@@ -38,7 +38,7 @@ public class Pedido {
         this.id = id;
     }
 
-    public boolean isEliminado() {
+    public boolean getEliminado() {
         return eliminado;
     }
 

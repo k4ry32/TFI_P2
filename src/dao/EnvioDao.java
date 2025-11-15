@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.Date;
 
 
 public class EnvioDao implements GenericDao<Envio>{
@@ -23,14 +24,14 @@ public boolean crear(Envio entidad, Connection conn) throws Exception {
     try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
         stmt.setLong(1,entidad.getId());
-        stmt.setInt(2, entidad.getEliminado());
+        stmt.setBoolean(2, entidad.getEliminado());
         stmt.setString(3, entidad.getTracking());
-        stmt.setString(4, entidad.getEmpresa());
-        stmt.setString(5, entidad.getTipo());
+        stmt.setString(4, entidad.getEmpresa().name());
+        stmt.setString(5, entidad.getTipo().name());
         stmt.setDouble(6, entidad.getCosto());
-        stmt.setString(7, entidad.getFechaDespacho());
-        stmt.setString(8, entidad.getFechaEstimada());
-        stmt.setString(9, entidad.getEstado());
+        stmt.setDate(7, entidad.getFechaDespacho() != null ? Date.valueOf(entidad.getFechaDespacho()) : null);
+        stmt.setDate(8, entidad.getFechaEstimada() != null ? Date.valueOf(entidad.getFechaEstimada()) : null);
+        stmt.setString(9, entidad.getEstado().name());
 
         int filasAfectadas = stmt.executeUpdate();
         
@@ -67,17 +68,23 @@ public boolean crear(Envio entidad, Connection conn) throws Exception {
         try (ResultSet rs = stmt.executeQuery()) {
             
             if (rs.next()) {
-                envio = new Envio(
-                    rs.getLong("id"),
-                    rs.getInt("eliminado"),
-                    rs.getString("tracking"),
-                    rs.getString("empresa"),
-                    rs.getString("tipo"),
-                    rs.getDouble("costo"),
-                    rs.getString("fechaDespacho"),
-                    rs.getString("fechaEstimada"),
-                    rs.getString("estado")
-                );
+                envio = new Envio();
+                
+                envio.setId(rs.getLong("id"));
+                envio.setEliminado(rs.getBoolean("eliminado"));
+                envio.setTracking(rs.getString("tracking"));
+                envio.setEmpresa(Envio.EmpresaEnvio.valueOf(rs.getString("empresa")));
+                envio.setTipo(Envio.TipoEnvio.valueOf(rs.getString("tipo")));
+                envio.setCosto(rs.getDouble("costo"));
+                envio.setEstado(Envio.EstadoEnvio.valueOf(rs.getString("estado")));
+                
+                Date fechaDespacho = rs.getDate("fechaDespacho");
+                if(fechaDespacho != null)  
+                    envio.setFechaDespacho(fechaDespacho.toLocalDate());
+                
+                Date fechaEstimada = rs.getDate("fechaEstimada");
+                if (fechaEstimada != null)
+                    envio.setFechaEstimada(fechaEstimada.toLocalDate());
             }
         }
         
@@ -103,14 +110,14 @@ public List<Envio> leerTodos(Connection conn) throws Exception {
             
             Envio envio = new Envio(
                 rs.getLong("id"),
-                rs.getInt("eliminado"),
+                rs.getBoolean("eliminado"),
                 rs.getString("tracking"),
-                rs.getString("empresa"),
-                rs.getString("tipo"),
+                Envio.EmpresaEnvio.valueOf(rs.getString("empresa")),
+                Envio.TipoEnvio.valueOf(rs.getString("tipo")),
                 rs.getDouble("costo"),
-                rs.getString("fechaDespacho"),
-                rs.getString("fechaEstimada"),
-                rs.getString("estado")
+                rs.getDate("fechaDespacho") != null ? rs.getDate("fechaDespacho").toLocalDate() : null,
+                rs.getDate("fechaEstimada") != null ? rs.getDate("fechaEstimada").toLocalDate() : null,
+                Envio.EstadoEnvio.valueOf(rs.getString("estado"))
             );
             
             listaEnvios.add(envio);
@@ -133,12 +140,12 @@ public boolean actualizar(Envio entidad, Connection conn) throws Exception {
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
         
         stmt.setString(1, entidad.getTracking());
-        stmt.setString(2, entidad.getEmpresa());
-        stmt.setString(3, entidad.getTipo());
+        stmt.setString(2, entidad.getEmpresa().name());
+        stmt.setString(3, entidad.getTipo().name());
         stmt.setDouble(4, entidad.getCosto());
-        stmt.setString(5, entidad.getFechaDespacho());
-        stmt.setString(6, entidad.getFechaEstimada());
-        stmt.setString(7, entidad.getEstado());
+        stmt.setDate(5, entidad.getFechaDespacho() != null ? Date.valueOf(entidad.getFechaDespacho()) : null);
+        stmt.setDate(6, entidad.getFechaEstimada() != null ? Date.valueOf(entidad.getFechaEstimada()) : null);
+        stmt.setString(7, entidad.getEstado().name());
         
         stmt.setLong(8, entidad.getId()); 
 

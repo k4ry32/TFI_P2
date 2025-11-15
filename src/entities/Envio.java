@@ -41,7 +41,7 @@ public class Envio {
         this.id = id;
     }
 
-    public boolean isEliminado() {
+    public boolean getEliminado() {
         return eliminado;
     }
 
