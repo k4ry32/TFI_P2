@@ -176,16 +176,15 @@ public class EnvioDao implements GenericDao<Envio>{
         }
     }
 
-    public Optional<Envio> buscarPorTracking(String tracking, Connection conn) throws Exception {
-    
-    Envio envio = null; 
-    
-    String sql = "SELECT * FROM envios WHERE tracking = ? ;";
 
-    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        
-        try (ResultSet rs = stmt.executeQuery()) {
-            
+    public Optional<Envio> buscarPorTracking(String tracking, Connection conn) throws Exception {    
+        Envio envio = null;         
+        String sql = "SELECT * FROM envios WHERE tracking = ?;";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {     
+            stmt.setString(1, tracking);
+            ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 envio = new Envio();
                 
@@ -205,13 +204,11 @@ public class EnvioDao implements GenericDao<Envio>{
                 if (fechaEstimada != null)
                     envio.setFechaEstimada(fechaEstimada.toLocalDate());
             }
+            
+        } catch (SQLException e) {
+            throw new Exception("Error DAO al buscar por tracking de envío: " + e.getMessage(), e);
         }
         
-    } catch (SQLException e) {
-        System.err.println("Error DAO al buscar el envio por codigo de tracking: " + e.getMessage());
-        throw new Exception("Error al consultar el envío.", e);
+        return Optional.ofNullable(envio);
     }
-    
-    return Optional.ofNullable(envio);
-}
 }
