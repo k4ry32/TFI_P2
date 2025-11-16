@@ -176,4 +176,42 @@ public class EnvioDao implements GenericDao<Envio>{
         }
     }
 
+    public Optional<Envio> buscarPorTracking(String tracking, Connection conn) throws Exception {
+    
+    Envio envio = null; 
+    
+    String sql = "SELECT * FROM envios WHERE tracking = ? ;";
+
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        try (ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                envio = new Envio();
+                
+                envio.setId(rs.getLong("id"));
+                envio.setEliminado(rs.getBoolean("eliminado"));
+                envio.setTracking(rs.getString("tracking"));
+                envio.setEmpresa(Envio.EmpresaEnvio.valueOf(rs.getString("empresa")));
+                envio.setTipo(Envio.TipoEnvio.valueOf(rs.getString("tipo")));
+                envio.setCosto(rs.getDouble("costo"));
+                envio.setEstado(Envio.EstadoEnvio.valueOf(rs.getString("estado")));
+                
+                Date fechaDespacho = rs.getDate("fechaDespacho");
+                if(fechaDespacho != null)  
+                    envio.setFechaDespacho(fechaDespacho.toLocalDate());
+                
+                Date fechaEstimada = rs.getDate("fechaEstimada");
+                if (fechaEstimada != null)
+                    envio.setFechaEstimada(fechaEstimada.toLocalDate());
+            }
+        }
+        
+    } catch (SQLException e) {
+        System.err.println("Error DAO al buscar el envio por codigo de tracking: " + e.getMessage());
+        throw new Exception("Error al consultar el envío.", e);
+    }
+    
+    return Optional.ofNullable(envio);
+}
 }

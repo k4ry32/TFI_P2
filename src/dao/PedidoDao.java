@@ -203,4 +203,46 @@ public class PedidoDao implements GenericDao<Pedido>{
         
         return false;
     }
+
+    public Optional<Pedido> buscarPorNumero(String tracking, Connection conn){
+        Pedido pedido=null;
+        String sql = "SELECT * from pedidos WHERE numero = ?";
+        try(PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1, tracking);
+            ResultSet rs = stmt.executeQuery();
+            
+            if(rs.next()){
+                pedido = new Pedido();
+                pedido.setId(rs.getLong("id"));
+                pedido.setEliminado(rs.getBoolean("eliminado"));
+                pedido.setNumero(rs.getString("numero"));
+                pedido.setFecha(rs.getDate("fecha").toLocalDate());
+                pedido.setClienteNombre(rs.getString("clienteNombre"));
+                pedido.setTotal(rs.getDouble("total"));
+                pedido.setEstado(Pedido.EstadoPedido.valueOf(rs.getString("estado")));
+                
+                Long envioId = rs.getLong("envio");
+                if(envioId != null){
+                    Envio envio = new Envio();
+                    envio.setId(envioId);
+                    envio.setEliminado(rs.getBoolean("eliminado"));
+                    envio.setTracking(rs.getString("tracking"));
+                    envio.setEmpresa(Envio.EmpresaEnvio.valueOf(rs.getString("empresa")));
+                    envio.setTipo(Envio.TipoEnvio.valueOf(rs.getString("tipo")));
+                    envio.setCosto(rs.getDouble("costo"));
+                    envio.setFechaDespacho(rs.getDate("fechaDespacho").toLocalDate());
+                    envio.setFechaEstimada(rs.getDate("fechaEstimada").toLocalDate());
+                    envio.setEstado(Envio.EstadoEnvio.valueOf(rs.getString("estado")));
+                    pedido.setEnvio(envio);
+                }
+                
+            }
+            else{
+                System.out.println("Tracking No encontrado");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al buscar por numero de tracking, "+ e.getMessage());
+        }
+        return Optional.of(pedido);
+    }
 }
