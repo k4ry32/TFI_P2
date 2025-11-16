@@ -122,4 +122,17 @@ public class PedidoService implements GenericService<Pedido>{
             throw new Exception("DELETE ERROR SERVICE PEDIDO - " + e.getMessage(), e);
         }
     }
+
+    public Pedido buscarPorNumero(String numero) throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            Optional<Pedido> pedido = pedidoDao.buscarPorNumero(numero, conn);
+            if (pedido.isPresent()) {
+                return pedido.get();
+            } else {
+                throw new Exception("No se encontró el pedido con número: " + numero);
+            }
+        } catch (Exception e) {
+            throw new Exception("SEARCH BY NUMBER ERROR SERVICE PEDIDO - " + e.getMessage(), e);
+        }
+    }
 }

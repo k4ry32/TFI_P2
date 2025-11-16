@@ -94,7 +94,7 @@ public class PedidoDao implements GenericDao<Pedido>{
                 
             }
             else{
-                System.out.println("No encontrado");
+                System.out.println("Pedido no encontrado");
             }
         } catch (Exception e) {
             throw new Exception("Error DAO al buscar el pedido: " + e.getMessage(), e);
@@ -204,45 +204,40 @@ public class PedidoDao implements GenericDao<Pedido>{
         return false;
     }
 
-    public Optional<Pedido> buscarPorNumero(String tracking, Connection conn){
-        Pedido pedido=null;
-        String sql = "SELECT * from pedidos WHERE numero = ?";
+    public Optional<Pedido> buscarPorNumero(String numero, Connection conn) throws Exception {
+        Pedido pedido = null;
+        String sql = "SELECT * from pedidos WHERE numero = ?;";
+
         try(PreparedStatement stmt = conn.prepareStatement(sql)){
-            stmt.setString(1, tracking);
+            stmt.setString(1, numero);
             ResultSet rs = stmt.executeQuery();
             
             if(rs.next()){
                 pedido = new Pedido();
+
                 pedido.setId(rs.getLong("id"));
                 pedido.setEliminado(rs.getBoolean("eliminado"));
                 pedido.setNumero(rs.getString("numero"));
-                pedido.setFecha(rs.getDate("fecha").toLocalDate());
+                pedido.setFecha(rs.getDate("fecha") != null ? rs.getDate("fecha").toLocalDate() : null);
                 pedido.setClienteNombre(rs.getString("clienteNombre"));
                 pedido.setTotal(rs.getDouble("total"));
                 pedido.setEstado(Pedido.EstadoPedido.valueOf(rs.getString("estado")));
                 
                 Long envioId = rs.getLong("envio");
-                if(envioId != null){
-                    Envio envio = new Envio();
-                    envio.setId(envioId);
-                    envio.setEliminado(rs.getBoolean("eliminado"));
-                    envio.setTracking(rs.getString("tracking"));
-                    envio.setEmpresa(Envio.EmpresaEnvio.valueOf(rs.getString("empresa")));
-                    envio.setTipo(Envio.TipoEnvio.valueOf(rs.getString("tipo")));
-                    envio.setCosto(rs.getDouble("costo"));
-                    envio.setFechaDespacho(rs.getDate("fechaDespacho").toLocalDate());
-                    envio.setFechaEstimada(rs.getDate("fechaEstimada").toLocalDate());
-                    envio.setEstado(Envio.EstadoEnvio.valueOf(rs.getString("estado")));
-                    pedido.setEnvio(envio);
+                if(!rs.wasNull() && envioId != 0){
+                    // Obtener el envío completo usando EnvioDao
+                    Optional<Envio> envioOpt = envioDao.leer(envioId, conn);
+                    if(envioOpt.isPresent()){
+                        pedido.setEnvio(envioOpt.get());
+                    }
                 }
                 
             }
-            else{
-                System.out.println("Tracking No encontrado");
-            }
-        } catch (Exception e) {
-            System.out.println("Error al buscar por numero de tracking, "+ e.getMessage());
+
+        } catch (SQLException e) {
+            throw new Exception("Error DAO al buscar por numero de pedido: " + e.getMessage(), e);
         }
-        return Optional.of(pedido);
+
+        return Optional.ofNullable(pedido);
     }
 }

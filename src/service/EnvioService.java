@@ -8,7 +8,6 @@ import config.DatabaseConnection;
 import config.TransactionManager;
 import java.sql.Connection;
 import entities.Envio;
-import dao.GenericDao;
 import dao.EnvioDao;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +18,7 @@ import java.util.Optional;
  */
 public class EnvioService implements GenericService<Envio>{
     
-    private final GenericDao<Envio> envioDao;
+    private final EnvioDao envioDao;
     private final Validations validations;
 
     public EnvioService() {
@@ -108,6 +107,16 @@ public class EnvioService implements GenericService<Envio>{
         }
     }
     
-    
-    
+    public Envio buscarPorTracking(String tracking) throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            Optional<Envio> envio = envioDao.buscarPorTracking(tracking, conn);
+            if (envio.isPresent()) {
+                return envio.get();
+            } else {
+                throw new Exception("No se encontró el envío con tracking: " + tracking);
+            }
+        } catch (Exception e) {
+            throw new Exception("SEARCH BY TRACKING ERROR SERVICE ENVIO - " + e.getMessage(), e);
+        }
+    }
 }
