@@ -9,7 +9,13 @@ echo "Compilando el Sistema de Gestión de Pedidos y Envíos..."
 mkdir -p classes
 
 # Compilar todas las clases Java
-javac -cp ".:lib/mysql-connector-j-8.2.0.jar" -d classes src/tfi/**/*.java
+javac -cp ".:lib/mysql-connector-j-8.2.0.jar" -d classes src/**/*.java
+
+# Copiar archivos de recursos (como db.properties) al directorio classes
+if [ -f "src/db.properties" ]; then
+    cp src/db.properties classes/db.properties
+    echo "Archivo db.properties copiado a classes/"
+fi
 
 if [ $? -eq 0 ]; then
     echo "Compilación exitosa!"

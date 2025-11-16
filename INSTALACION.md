@@ -76,7 +76,7 @@ Este archivo esta excluido por el .gitignore para que cada desarrollador lo adap
 ./compile.sh
 
 # Ejecutar el seeder Java
-java -cp ".:classes:lib/mysql-connector-j-8.2.0.jar" tfi.main.DatabaseSeeder
+java -cp ".:classes:lib/mysql-connector-j-8.2.0.jar" util.DatabaseSeeder
 ```
 
 ### 5. Compilar y Ejecutar
@@ -128,12 +128,12 @@ TFI_Programacion2/
 
 ### Compilar manualmente:
 ```bash
-javac -cp ".:lib/mysql-connector-java-8.2.0.jar" -d classes src/tfi/**/*.java
+javac -cp ".:lib/mysql-connector-java-8.2.0.jar" -d classes src/**/*.java
 ```
 
 ### Ejecutar manualmente:
 ```bash
-java -cp ".:lib/mysql-connector-java-8.2.0.jar:classes" tfi.main.Main
+java -cp ".:lib/mysql-connector-java-8.2.0.jar:classes" main.Main
 ```
 
 ### Verificar tablas en MySQL:
