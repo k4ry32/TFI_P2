@@ -4,10 +4,21 @@
  */
 package service;
 
+import java.util.List;
+
 /**
  *
  * @author kari
  */
-public class GenericService {
+public interface GenericService<T> {
+
+    void insertar(T entidad) throws Exception;
     
+    void actualizar(T entidad) throws Exception;
+    
+    T obtenerPorId(Long id) throws Exception;
+    
+    List<T> obtenerTodos() throws Exception;
+    
+    void eliminar(Long id) throws Exception;
 }
