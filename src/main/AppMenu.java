@@ -61,15 +61,12 @@ public class AppMenu {
                     buscarPedidoPorNumero();
                     break;
                 case 7:
-                    buscarPedidoPorCliente();
-                    break;
-                case 8:
                     crearEnvio();
                     break;
-                case 9:
+                case 8:
                     listarTodosEnvios();
                     break;
-                case 10:
+                case 9:
                     buscarEnvioPorTracking();
                     break;
                 case 0:
@@ -77,7 +74,7 @@ public class AppMenu {
                     System.out.println("¡Gracias por usar nuestro ssitema de envios! Hasta luego.");
                     break;
                 default:
-                    System.out.println("Opción inválida. Por favor ingrese un número entre 0 y 10.");
+                    System.out.println("Opción inválida. Por favor ingrese un número entre 0 y 9.");
             }
             
             // Pausa para que el usuario vea el resultado antes de volver al menú
@@ -99,11 +96,10 @@ public class AppMenu {
         System.out.println("    4. Actualizar Pedido");
         System.out.println("    5. Eliminar Pedido (baja lógica)");
         System.out.println("    6. Buscar Pedido por número");
-        System.out.println("    7. Buscar Pedidos por nombre de cliente");
         System.out.println("  ─ GESTIÓN DE ENVÍOS ──────────────────────────────");
-        System.out.println("    8. Crear Envío independiente ");
-        System.out.println("    9. Listar todos los Envíos");
-        System.out.println("    10. Buscar Envío por tracking");
+        System.out.println("    7. Crear Envío independiente");
+        System.out.println("    8. Listar todos los Envíos");
+        System.out.println("    9. Buscar Envío por tracking");
         System.out.println("    0. Salir del sistema");
         System.out.println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         System.out.print(" Seleccione una opción: ");
@@ -189,27 +185,7 @@ public class AppMenu {
             }
             
             // 5. Estado del pedido
-            System.out.println("Estado del pedido:");
-            System.out.println("  1. NUEVO");
-            System.out.println("  2. FACTURADO");
-            System.out.println("  3. ENVIADO");
-            System.out.print("Seleccione (1-3): ");
-            try {
-                int estadoOpcion = Integer.parseInt(scanner.nextLine().trim());
-                EstadoPedido estado;
-                switch (estadoOpcion) {
-                    case 1: estado = EstadoPedido.NUEVO; break;
-                    case 2: estado = EstadoPedido.FACTURADO; break;
-                    case 3: estado = EstadoPedido.ENVIADO; break;
-                    default:
-                        System.out.println("Opción de estado inválida.");
-                        return;
-                }
-                pedido.setEstado(estado);
-            } catch (NumberFormatException e) {
-                System.out.println("Debe ingresar un número válido.");
-                return;
-            }
+            pedido.setEstado(EstadoPedido.NUEVO);
             
             // 6. Crear el envío asociado
             System.out.println("DATOS DEL ENVÍO ASOCIADO");
@@ -297,22 +273,7 @@ public class AppMenu {
             }
             
             // 7. Estado del envío
-            System.out.println("Estado del envío:");
-            System.out.println("  1. EN_PREPARACION");
-            System.out.println("  2. EN_TRANSITO");
-            System.out.println("  3. ENTREGADO");
-            System.out.print("Seleccione (1-3): ");
-            int estadoOpcion = Integer.parseInt(scanner.nextLine().trim());
-            EstadoEnvio estado;
-            switch (estadoOpcion) {
-                case 1: estado = EstadoEnvio.EN_PREPARACION; break;
-                case 2: estado = EstadoEnvio.EN_TRANSITO; break;
-                case 3: estado = EstadoEnvio.ENTREGADO; break;
-                default:
-                    System.out.println("Opción de estado inválida.");
-                    return null;
-            }
-            envio.setEstado(estado);
+            envio.setEstado(EstadoEnvio.EN_PREPARACION);
             
             return envio;
             
@@ -482,44 +443,7 @@ public class AppMenu {
             System.out.println("X " + e.getMessage());
         }
     }
-    
-    /**
-     * Busca pedidos por nombre de cliente (simulado con listado filtrado)
-     */
-    private static void buscarPedidoPorCliente() {
-        System.out.println("   BUSCAR PEDIDOS POR CLIENTE          ");
-        
-        try {
-            System.out.print("Ingrese el nombre del cliente: ");
-            String nombreBuscar = scanner.nextLine().trim().toUpperCase();
-            
-            if (nombreBuscar.isEmpty()) {
-                System.out.println("Debe ingresar un nombre de cliente.");
-                return;
-            }
-            
-            List<Pedido> pedidos = pedidoService.obtenerTodos();
-            List<Pedido> pedidosFiltrados = pedidos.stream()
-                    .filter(p -> p.getClienteNombre().toUpperCase().contains(nombreBuscar))
-                    .toList();
-            
-            if (pedidosFiltrados.isEmpty()) {
-                System.out.println("No se encontraron pedidos para el cliente: " + nombreBuscar);
-            } else {
-                System.out.println("Se encontraron " + pedidosFiltrados.size() + " pedido(s):");
-                System.out.println("─".repeat(80));
-                for (Pedido pedido : pedidosFiltrados) {
-                    mostrarPedidoResumido(pedido);
-                    System.out.println("─".repeat(80));
-                }
-            }
-            
-        } catch (Exception e) {
-            System.out.println("X " + e.getMessage());
-        }
-    }
-    
-    
+     
     //MÉTODOS CRUD - ENVÍOS
     
     /**
