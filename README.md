@@ -133,7 +133,7 @@ Este documento incluye:
 - Configuración de la base de datos (manual y con Docker)
 - Configuración del driver MySQL
 - Configuración de credenciales (`db.properties`)
-- Población de datos de prueba
+- Población de datos de prueba (`DatabaseSeeder.java` en la carpeta util)
 - Scripts de compilación y ejecución (`compile.sh` y `run.sh`)
 - Comandos útiles para MySQL
 - Solución de problemas comunes
@@ -459,7 +459,7 @@ public class TransactionManager implements AutoCloseable {
 
 - **Lenguaje**: Java 17
 - **Base de Datos**: MySQL 8.x
-- **JDBC Driver**: mysql-connector-j 8.4.0
+- **JDBC Driver**: mysql-connector-j 8.2.0
 - **IDE Recomendado**: IntelliJ IDEA / Eclipse
 
 ## Estructura de Directorios
@@ -501,7 +501,7 @@ TFI_P2/
 ### Error: "ClassNotFoundException: com.mysql.cj.jdbc.Driver"
 **Causa**: JAR de MySQL no está en classpath
 
-**Solución**: Agregar `mysql-connector-j-8.4.0.jar` al classpath
+**Solución**: Agregar `mysql-connector-j-8.2.0.jar` al classpath
 
 ### Error: "Communications link failure"
 **Causa**: MySQL no está ejecutándose
@@ -518,9 +518,14 @@ net start MySQL80
 ### Error: "Access denied for user 'root'@'localhost'"
 **Causa**: Credenciales incorrectas
 
-**Solución**: Verificar usuario/contraseña en `DatabaseConnection.java`
+**Solución**: Verificar usuario/contraseña en `db.properties`
 
-### Error: "Unknown database 'TFI_P2'"
+### Error: "No se encontró el archivo /db.properties"
+**Causa**: No se encontro el archivo db.properties que posee la configuracion necesaria para acceder a la DB.
+
+**Solución**: Hacer una copia del archivo `model.db.properties`, ubicarlo en el mismo path y cambiar el nombre por `db.properties`. Luego cambiar el contenido por sus credenciales de acceso.
+
+### Error: "Unknown database 'gestion_envios'"
 **Causa**: Base de datos no creada
 
 **Solución**: Ejecutar el script `setup-database.sql` en MySQL Workbench
