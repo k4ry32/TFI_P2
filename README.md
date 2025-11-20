@@ -8,9 +8,12 @@
 - Bruno Maza
 - Karina Rodriguez
 
-Enlace al video:
 
 **Institución**: Tecnicatura Universitaria en Programación - Universidad Tecnológica Nacional
+
+**Enlace al video**: [Link a Drive](https://drive.google.com/file/d/1HfwS5FS3aWq5oDdg5hfgEEWr0KyFpuI9/view?usp=sharing)
+
+**Informe**: Informe TFI P2_Ovelar_Maza_Paschetta_Rodriguez.pdf (en raiz del proyecto)
 
 ---
 

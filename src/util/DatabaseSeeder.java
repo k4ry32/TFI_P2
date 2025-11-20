@@ -22,8 +22,8 @@ import java.util.Random;
  */
 public class DatabaseSeeder {
     
-    private static final int TOTAL_REGISTROS = 500;
-    private static final LocalDate FECHA_BASE = LocalDate.of(2025, 10, 1);
+    private static final int TOTAL_REGISTROS = 100;
+    private static final LocalDate FECHA_BASE = LocalDate.of(2025, 11, 1);
     
     // Datos para generar combinaciones
     private static final String[] NOMBRES = {
